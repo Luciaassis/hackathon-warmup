@@ -25,14 +25,15 @@ fs.readFile('data/2019.csv', 'utf8', function (err, contents) {
 
 		var obj = csvjson.toObject(contents, {delimiter: ',', quote: '\"'});
 		obj.forEach((item) => {
-			var versions = item.body_styles.split(',');
+			var versions = item.body_styles.split(', ');
 			versions.forEach((version) => {
 				var veiculo = {
 					marca: item.make,
 					modelo: item.model + " " + version,
 					ano: item.year,
 					valor: randomValue(999) * 100,
-					local: locais[randomValue(5) - 1]
+					local: locais[randomValue(5) - 1],
+					placa: randomPlate()
 				}
 				db.collection('veiculos').insertOne(veiculo);
 				console.log("Vehicle saved: "+ JSON.stringify(veiculo));
@@ -45,4 +46,18 @@ function randomValue(max) {
 	return Math.floor(Math.random() * max) + 1;  
 }
 
+function randomPlate() {
+	var plate = "";
 
+	for(var i = 0; i < 3; i++) {
+		var charCode = randomValue(26) + 64;
+		var letter = String.fromCharCode(charCode);
+		plate = plate + letter; 
+	}
+
+	for(var i = 0; i < 4; i++) {
+		plate = plate + (randomValue(9)-1);
+	}
+
+	return plate;
+}
